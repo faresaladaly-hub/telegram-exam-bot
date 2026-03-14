@@ -26,13 +26,18 @@ def chat(msg):
             ]
         }
 
-        response = requests.post(url, json=data, timeout=60)
+        response = requests.post(url, json=data)
         result = response.json()
 
-        answer = result["candidates"][0]["content"]["parts"][0]["text"]
+        if "candidates" in result:
+            answer = result["candidates"][0]["content"]["parts"][0]["text"]
+        else:
+            answer = "لم أستطع توليد إجابة، حاول مرة أخرى."
+
         bot.reply_to(msg, answer)
 
-    except Exception:
+    except Exception as e:
+        print(e)
         bot.reply_to(msg, "حدث خطأ حاول مرة أخرى")
 
 bot.infinity_polling(skip_pending=True)
