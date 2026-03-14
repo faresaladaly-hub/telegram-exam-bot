@@ -14,7 +14,15 @@ def start(msg):
 @bot.message_handler(func=lambda m: True)
 def chat(msg):
     try:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_KEY}"
+        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        params = {
+            "key": GEMINI_KEY
+        }
 
         data = {
             "contents": [
@@ -26,13 +34,14 @@ def chat(msg):
             ]
         }
 
-        response = requests.post(url, json=data)
+        response = requests.post(url, headers=headers, params=params, json=data)
         result = response.json()
 
         if "candidates" in result:
             answer = result["candidates"][0]["content"]["parts"][0]["text"]
         else:
-            answer = "لم أستطع توليد إجابة، حاول مرة أخرى."
+            print(result)
+            answer = "حدث خطأ من Gemini"
 
         bot.reply_to(msg, answer)
 
