@@ -1,6 +1,8 @@
 import os
 import telebot
-from openai import OpenAI
+import openai
+
+
 
 TOKEN = os.getenv("BOT_TOKEN")
 OPENAI_KEY = os.getenv("OPENAI_KEY")
