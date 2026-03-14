@@ -35,4 +35,4 @@ def chat(msg):
     except Exception:
         bot.reply_to(msg, "حدث خطأ حاول مرة أخرى")
 
-bot.infinity_polling()
+bot.infinity_polling(skip_pending=True)
