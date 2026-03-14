@@ -7,12 +7,18 @@ GEMINI_KEY = os.getenv("GEMINI_KEY")
 
 bot = telebot.TeleBot(TOKEN)
 
+# رسالة البداية
 @bot.message_handler(commands=['start'])
 def start(msg):
-    bot.reply_to(msg, "👋 أهلاً بك في بوت المذاكرة\nاكتب سؤالك.")
+    bot.reply_to(
+        msg,
+        "👋 أهلاً بك في بوت المذاكرة\n"
+        "اسأل أي سؤال دراسي وسأشرح لك بطريقة بسيطة."
+    )
 
-@bot.message_handler(func=lambda m: True)
-def chat(msg):
+# الرد على أي رسالة
+@bot.message_handler(func=lambda message: True)
+def chat(message):
     try:
         url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
@@ -28,25 +34,28 @@ def chat(msg):
             "contents": [
                 {
                     "parts": [
-                        {"text": msg.text}
+                        {
+                            "text": f"اشرح هذا السؤال بطريقة بسيطة للطالب:\n{message.text}"
+                        }
                     ]
                 }
             ]
         }
 
         response = requests.post(url, headers=headers, params=params, json=data)
+
         result = response.json()
 
         if "candidates" in result:
             answer = result["candidates"][0]["content"]["parts"][0]["text"]
         else:
             print(result)
-            answer = "حدث خطأ من Gemini"
+            answer = "حدث خطأ في Gemini"
 
-        bot.reply_to(msg, answer)
+        bot.reply_to(message, answer)
 
     except Exception as e:
         print(e)
-        bot.reply_to(msg, "حدث خطأ حاول مرة أخرى")
+        bot.reply_to(message, "حدث خطأ حاول مرة أخرى")
 
 bot.infinity_polling(skip_pending=True)
